@@ -11,6 +11,7 @@ import ProductDetail from './components/ProductDetail';
 import CartDrawer from './components/CartDrawer';
 import Checkout from './components/Checkout';
 import Footer from './components/Footer';
+import Assistant from './components/Assistant';
 import { PAPERS } from './constants';
 import { Paper, ViewState } from './types';
 
@@ -248,6 +249,8 @@ const App: React.FC = () => {
         onRemoveItem={(paper) => handleToggleSave(paper)} 
         onItemClick={handlePaperClick}
       />
+
+      <Assistant />
 
       <main className="flex-grow">
         {viewState.type === 'home' && (
