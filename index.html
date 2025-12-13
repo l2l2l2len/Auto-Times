@@ -4,7 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Auto Times - Global Automotive Chronicles</title>
-    <meta name="description" content="The authoritative source for breaking automotive news, deep-dive features, and expert analysis." />
+    <meta name="description" content="The authoritative source for breaking automotive news, reviews, and industry analysis." />
+    <script>
+      // Shim process for browser environments to prevent crashes in libraries that expect node env
+      window.process = { env: { NODE_ENV: 'production' } };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
