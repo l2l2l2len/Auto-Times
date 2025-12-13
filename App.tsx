@@ -51,48 +51,23 @@ const App: React.FC = () => {
     }
 
     // 3. Load Papers (Reports) and sync with upvotes
-    // Version updated to v3
-    // Implemented Daily Refresh Logic (TTL)
-    const CACHE_KEY = 'theautotimes_v3';
-    const CACHE_TS_KEY = 'theautotimes_last_fetch';
-    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-
-    const storedPapers = localStorage.getItem(CACHE_KEY);
-    const storedTS = localStorage.getItem(CACHE_TS_KEY);
-    const now = Date.now();
-    
+    // Key updated to theautotimes_v1 to ensure new dataset loads
+    const storedPapers = localStorage.getItem('theautotimes_v1'); 
     let basePapers = PAPERS;
     
-    if (storedPapers && storedTS) {
+    if (storedPapers) {
       try {
-        const lastFetchTime = parseInt(storedTS, 10);
-        const isFresh = (now - lastFetchTime) < ONE_DAY_MS;
-
-        if (isFresh) {
-             const parsed = JSON.parse(storedPapers);
-             if (parsed.length > 0 && parsed.length >= PAPERS.length) {
-                 basePapers = parsed;
-                 // console.log("Loaded from fresh cache");
-             } else {
-                 // Fallback if data corrupted
-                 basePapers = PAPERS;
-                 localStorage.setItem(CACHE_TS_KEY, now.toString());
-             }
+        const parsed = JSON.parse(storedPapers);
+        // Basic check to see if local storage has stale data compared to constants (simple length check for now)
+        if (parsed.length > 0 && parsed.length >= PAPERS.length) {
+             basePapers = parsed;
         } else {
-             // Cache expired - load new constants
-             // console.log("Cache expired, refreshing data");
+             // Local storage is stale or smaller, use new constants
              basePapers = PAPERS;
-             localStorage.setItem(CACHE_TS_KEY, now.toString());
         }
       } catch (e) {
         console.warn("Error parsing local storage papers, resetting to default.", e);
-        basePapers = PAPERS;
-        localStorage.setItem(CACHE_TS_KEY, now.toString());
       }
-    } else {
-        // First load or missing keys
-        basePapers = PAPERS;
-        localStorage.setItem(CACHE_TS_KEY, now.toString());
     }
 
     // Sync upvotes
@@ -114,7 +89,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (papers.length > 0 && !isLoading) {
         try {
-            localStorage.setItem('theautotimes_v3', JSON.stringify(papers));
+            localStorage.setItem('theautotimes_v1', JSON.stringify(papers));
         } catch (e) {
             // Likely quota exceeded
         }
@@ -129,7 +104,7 @@ const App: React.FC = () => {
 
   // --- Actions ---
 
-  const handleNavClick = (e: React.MouseEvent<HTMLElement>, targetId: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     if (targetId === 'submit') {
       setViewState({ type: 'submit' });
@@ -237,10 +212,6 @@ const App: React.FC = () => {
       return [...papers].sort((a, b) => {
           if (b.upvotes !== a.upvotes) {
               return b.upvotes - a.upvotes;
-          }
-          // Sort by timestamp if available, else date
-          if (b.timestamp && a.timestamp) {
-              return b.timestamp - a.timestamp;
           }
           return parseInt(b.publicationDate) - parseInt(a.publicationDate); 
       });

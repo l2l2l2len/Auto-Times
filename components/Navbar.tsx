@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { BRAND_NAME } from '../constants';
 
 interface NavbarProps {
-  onNavClick: (e: React.MouseEvent<HTMLElement>, targetId: string) => void;
+  onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
   onCategoryClick: (category: string) => void;
   cartCount: number;
   onOpenCart: () => void;

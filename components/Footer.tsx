@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 
 interface FooterProps {
-  onLinkClick: (e: React.MouseEvent<HTMLElement>, targetId: string) => void;
+  onLinkClick: (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => void;
 }
 
 const Footer: React.FC<FooterProps> = ({ onLinkClick }) => {
