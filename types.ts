@@ -55,9 +55,19 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-export type ViewState = 
+export type ViewState =
   | { type: 'home' }
   | { type: 'paper', paper: Article }
   | { type: 'publisher', publisherName: string }
   | { type: 'journal', article: JournalArticle }
-  | { type: 'submit' };
+  | { type: 'submit' }
+  | { type: 'about' }
+  | { type: 'contact' }
+  | { type: 'terms' }
+  | { type: 'privacy' }
+  | { type: 'faq' };
+
+export interface NewsletterSubscriber {
+  email: string;
+  subscribedAt: number;
+}
