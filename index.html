@@ -2,28 +2,71 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Auto Times - Global Automotive Chronicles</title>
-    <meta name="description" content="The authoritative source for breaking automotive news, reviews, and industry analysis." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>The Auto Times - Global Automotive News & Reviews</title>
+    <meta name="title" content="The Auto Times - Global Automotive News & Reviews" />
+    <meta name="description" content="The definitive source for curated automotive journalism. Breaking news, EV coverage, supercar reviews, motorsport analysis, and industry insights from the world's best automotive publications." />
+    <meta name="keywords" content="automotive news, car news, EV news, electric vehicles, supercar reviews, motorsport, F1, Formula 1, car reviews, automotive industry, Tesla, Porsche, Ferrari, BMW" />
+    <meta name="author" content="The Auto Times" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://theautotimes.com/" />
+    <meta property="og:title" content="The Auto Times - Global Automotive News & Reviews" />
+    <meta property="og:description" content="Curated automotive journalism from the world's best publications. Breaking news, reviews, and industry analysis - no account required." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=1200" />
+    <meta property="og:site_name" content="The Auto Times" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://theautotimes.com/" />
+    <meta property="twitter:title" content="The Auto Times - Global Automotive News & Reviews" />
+    <meta property="twitter:description" content="Curated automotive journalism from the world's best publications. Breaking news, reviews, and industry analysis." />
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=1200" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://theautotimes.com/" />
+
+    <!-- Favicon (using data URI for simplicity) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏎</text></svg>" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#fcfbf9" />
+    <meta name="msapplication-TileColor" content="#fcfbf9" />
+
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+
+    <!-- Process shim for browser compatibility -->
     <script>
-      // Shim process for browser environments to prevent crashes in libraries that expect node env
       window.process = { env: { NODE_ENV: 'production' } };
     </script>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
       @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
-      
+
       html {
         scroll-behavior: smooth;
         scroll-padding-top: 120px;
-        background-color: #fcfbf9; /* Slight aged paper tone */
+        background-color: #fcfbf9;
       }
 
       body {
-        font-family: 'Libre Baskerville', serif;
+        font-family: 'Libre Baskerville', Georgia, serif;
         color: #1a1a1a;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      
+
       /* Masthead Font */
       .font-masthead {
         font-family: 'UnifrakturMaguntia', cursive;
@@ -36,9 +79,10 @@
 
       /* Modern Accents */
       .font-sans-accent {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Inter', system-ui, sans-serif;
       }
 
+      /* Hide scrollbar for clean look */
       .no-scrollbar::-webkit-scrollbar {
         display: none;
       }
@@ -47,6 +91,7 @@
         scrollbar-width: none;
       }
 
+      /* Animations */
       @keyframes fade-in-up {
         0% { opacity: 0; transform: translateY(20px); }
         100% { opacity: 1; transform: translateY(0); }
@@ -55,7 +100,7 @@
       .animate-fade-in-up {
         animation: fade-in-up 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards;
       }
-      
+
       /* Newspaper specific utilities */
       .paper-border {
         border-bottom: 1px solid #000;
@@ -66,8 +111,59 @@
       .double-border-bottom {
         border-bottom: 3px double #000;
       }
+
+      /* Focus styles for accessibility */
+      *:focus-visible {
+        outline: 2px solid #000;
+        outline-offset: 2px;
+      }
+
+      /* Reduce motion for accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .animate-fade-in-up {
+          animation: none;
+        }
+        * {
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        body {
+          background-color: #fff;
+          color: #000;
+        }
+      }
+
+      /* Print styles */
+      @media print {
+        nav, footer, button {
+          display: none !important;
+        }
+        body {
+          background: white;
+          color: black;
+        }
+      }
+
+      /* Loading state */
+      #root:empty::before {
+        content: 'Loading The Auto Times...';
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Libre Baskerville', serif;
+        font-size: 1.25rem;
+        color: #666;
+      }
     </style>
-  <script type="importmap">
+
+    <script type="importmap">
 {
   "imports": {
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0",
@@ -77,9 +173,40 @@
   }
 }
 </script>
-</head>
+  </head>
   <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-black text-white px-4 py-2 z-[9999]">
+      Skip to main content
+    </a>
+
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "The Auto Times",
+      "description": "The definitive source for curated automotive journalism",
+      "url": "https://theautotimes.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://theautotimes.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "The Auto Times",
+      "url": "https://theautotimes.com",
+      "logo": "https://theautotimes.com/logo.png",
+      "description": "Curated automotive journalism from the world's best publications"
+    }
+    </script>
   </body>
 </html>

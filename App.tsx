@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ProductGrid from './components/ProductGrid';
@@ -11,6 +11,11 @@ import ProductDetail from './components/ProductDetail';
 import CartDrawer from './components/CartDrawer';
 import Checkout from './components/Checkout';
 import Footer from './components/Footer';
+import About from './components/About';
+import Contact from './components/Contact';
+import Terms from './components/Terms';
+import Privacy from './components/Privacy';
+import FAQ from './components/FAQ';
 import { PAPERS } from './constants';
 import { Paper, ViewState } from './types';
 
@@ -22,7 +27,7 @@ const App: React.FC = () => {
   const [readingList, setReadingList] = useState<Paper[]>([]);
   const [isReadingListOpen, setIsReadingListOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Navigation State
   const [activeCategory, setActiveCategory] = useState('Front Page');
 
@@ -51,18 +56,15 @@ const App: React.FC = () => {
     }
 
     // 3. Load Papers (Reports) and sync with upvotes
-    // Key updated to theautotimes_v1 to ensure new dataset loads
-    const storedPapers = localStorage.getItem('theautotimes_v1'); 
+    const storedPapers = localStorage.getItem('theautotimes_v1');
     let basePapers = PAPERS;
-    
+
     if (storedPapers) {
       try {
         const parsed = JSON.parse(storedPapers);
-        // Basic check to see if local storage has stale data compared to constants (simple length check for now)
         if (parsed.length > 0 && parsed.length >= PAPERS.length) {
              basePapers = parsed;
         } else {
-             // Local storage is stale or smaller, use new constants
              basePapers = PAPERS;
         }
       } catch (e) {
@@ -92,6 +94,7 @@ const App: React.FC = () => {
             localStorage.setItem('theautotimes_v1', JSON.stringify(papers));
         } catch (e) {
             // Likely quota exceeded
+            console.warn('LocalStorage quota exceeded');
         }
     }
   }, [papers, isLoading]);
@@ -102,12 +105,54 @@ const App: React.FC = () => {
   }, [userUpvotes]);
 
 
-  // --- Actions ---
+  // --- Navigation Actions ---
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+  const navigateToPage = useCallback((page: string) => {
+    switch (page) {
+      case 'about':
+        setViewState({ type: 'about' });
+        break;
+      case 'contact':
+        setViewState({ type: 'contact' });
+        break;
+      case 'terms':
+        setViewState({ type: 'terms' });
+        break;
+      case 'privacy':
+        setViewState({ type: 'privacy' });
+        break;
+      case 'faq':
+        setViewState({ type: 'faq' });
+        break;
+      case 'submit':
+        setViewState({ type: 'submit' });
+        break;
+      default:
+        setViewState({ type: 'home' });
+        setActiveCategory('Front Page');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     if (targetId === 'submit') {
       setViewState({ type: 'submit' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (targetId === 'about') {
+      setViewState({ type: 'about' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (targetId === 'contact') {
+      setViewState({ type: 'contact' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (targetId === 'terms') {
+      setViewState({ type: 'terms' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (targetId === 'privacy') {
+      setViewState({ type: 'privacy' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (targetId === 'faq') {
+      setViewState({ type: 'faq' });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (targetId === '') {
         setViewState({ type: 'home' });
@@ -125,61 +170,59 @@ const App: React.FC = () => {
         }
       }, 100);
     }
-  };
+  }, []);
 
-  const handleCategoryClick = (category: string) => {
+  const handleCategoryClick = useCallback((category: string) => {
       setViewState({ type: 'home' });
       setActiveCategory(category);
-      
+
       // Scroll to grid
       setTimeout(() => {
         const element = document.getElementById('products');
         if (element) {
-             const headerOffset = 180; // Approximate header height
+             const headerOffset = 180;
              const elementPosition = element.getBoundingClientRect().top;
              const offsetPosition = elementPosition + window.scrollY - headerOffset;
              window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
         }
       }, 50);
-  };
+  }, []);
 
-  const handlePaperClick = (paper: Paper) => {
+  const handlePaperClick = useCallback((paper: Paper) => {
     setViewState({ type: 'paper', paper });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  const handlePublisherClick = (publisherName: string) => {
+  const handlePublisherClick = useCallback((publisherName: string) => {
     setViewState({ type: 'publisher', publisherName });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  }, []);
 
-  const handleBackToHome = () => {
+  const handleBackToHome = useCallback(() => {
     setViewState({ type: 'home' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
   // Toggle Save (Add/Remove)
-  const handleToggleSave = (paper: Paper) => {
+  const handleToggleSave = useCallback((paper: Paper) => {
     const isSaved = readingList.some(item => item.id === paper.id);
     if (isSaved) {
       setReadingList(prev => prev.filter(item => item.id !== paper.id));
     } else {
       setReadingList(prev => [paper, ...prev]);
-      setIsReadingListOpen(true); // Open drawer on add
+      setIsReadingListOpen(true);
     }
-  };
+  }, [readingList]);
 
-  const handleUpvote = (paperId: string) => {
+  const handleUpvote = useCallback((paperId: string) => {
     const isAlreadyUpvoted = userUpvotes.includes(paperId);
-    
-    // Update local set of IDs user upvoted
-    const newUpvoteIds = isAlreadyUpvoted 
+
+    const newUpvoteIds = isAlreadyUpvoted
         ? userUpvotes.filter(id => id !== paperId)
         : [...userUpvotes, paperId];
-    
+
     setUserUpvotes(newUpvoteIds);
 
-    // Update derived UI count instantly
     setPapers(prevPapers => {
         return prevPapers.map(p => {
             if (p.id === paperId) {
@@ -191,35 +234,33 @@ const App: React.FC = () => {
             return p;
         });
     });
-  };
+  }, [userUpvotes]);
 
-  const handlePaperSubmit = (newPaper: Paper) => {
+  const handlePaperSubmit = useCallback((newPaper: Paper) => {
       setPapers(prev => [newPaper, ...prev]);
       setViewState({ type: 'home' });
       setActiveCategory('Front Page');
-      
+
       setTimeout(() => {
           const element = document.getElementById('products');
           if (element) {
              element.scrollIntoView({ behavior: 'smooth' });
           }
       }, 100);
-  };
+  }, []);
 
   // --- Derived State ---
   const sortedPapers = useMemo(() => {
-      // Basic ranking algorithm: Upvotes weighted heavily
       return [...papers].sort((a, b) => {
           if (b.upvotes !== a.upvotes) {
               return b.upvotes - a.upvotes;
           }
-          return parseInt(b.publicationDate) - parseInt(a.publicationDate); 
+          return parseInt(b.publicationDate) - parseInt(a.publicationDate);
       });
   }, [papers]);
 
   const savedPaperIds = useMemo(() => readingList.map(p => p.id), [readingList]);
 
-  // Filter for publisher view
   const publisherPapers = useMemo(() => {
     if (viewState.type === 'publisher') {
         return sortedPapers.filter(p => p.publisher === viewState.publisherName);
@@ -228,34 +269,45 @@ const App: React.FC = () => {
   }, [sortedPapers, viewState]);
 
   if (isLoading) {
-      return <div className="min-h-screen flex items-center justify-center bg-[#fcfbf9] text-black font-serif">Loading The Auto Times...</div>;
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-[#fcfbf9] text-black font-serif">
+          <div className="text-center">
+            <div className="font-masthead text-4xl mb-4">The Auto Times</div>
+            <div className="text-gray-500">Loading...</div>
+          </div>
+        </div>
+      );
   }
 
   return (
     <div className="bg-[#fcfbf9] min-h-screen text-black selection:bg-black selection:text-white flex flex-col">
-      <Navbar 
-        onNavClick={handleNavClick} 
+      <Navbar
+        onNavClick={handleNavClick}
         onCategoryClick={handleCategoryClick}
         cartCount={readingList.length}
         onOpenCart={() => setIsReadingListOpen(true)}
         activeCategory={activeCategory}
       />
-      
-      <CartDrawer 
+
+      <CartDrawer
         isOpen={isReadingListOpen}
         onClose={() => setIsReadingListOpen(false)}
         items={readingList}
-        onRemoveItem={(paper) => handleToggleSave(paper)} 
+        onRemoveItem={(paper) => handleToggleSave(paper)}
         onItemClick={handlePaperClick}
       />
 
       <main className="flex-grow">
         {viewState.type === 'home' && (
           <>
-            <Hero />
-            <ProductGrid 
-                papers={sortedPapers} 
-                onProductClick={handlePaperClick} 
+            <Hero
+              onCategoryClick={handleCategoryClick}
+              onPaperClick={handlePaperClick}
+              papers={sortedPapers}
+            />
+            <ProductGrid
+                papers={sortedPapers}
+                onProductClick={handlePaperClick}
                 onUpvote={handleUpvote}
                 userUpvotes={userUpvotes}
                 onPublisherClick={handlePublisherClick}
@@ -271,30 +323,29 @@ const App: React.FC = () => {
            <div className="pt-12 px-6 bg-[#fcfbf9]">
                 <div className="max-w-[1800px] mx-auto">
                     <div className="flex items-center gap-4 mb-12 border-b border-black pb-6">
-                         <button onClick={handleBackToHome} className="p-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors">
+                         <button onClick={handleBackToHome} className="p-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors" aria-label="Go back">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                             </svg>
                          </button>
-                         {/* Simple Logo Placeholder */}
                          <div className="w-16 h-16 bg-black text-white flex items-center justify-center font-headline font-bold text-2xl rounded-full">
                             {publisherPapers[0]?.publisherLogo || viewState.publisherName.substring(0,2).toUpperCase()}
                          </div>
                          <div>
                             <h1 className="text-4xl font-headline font-bold text-black">{viewState.publisherName}</h1>
-                            <p className="text-sm font-serif italic text-gray-600 mt-1">Publisher Profile • {publisherPapers.length} Articles</p>
+                            <p className="text-sm font-serif italic text-gray-600 mt-1">Publisher Profile &bull; {publisherPapers.length} Articles</p>
                          </div>
                     </div>
-                    
-                    <ProductGrid 
-                        papers={publisherPapers} 
-                        onProductClick={handlePaperClick} 
+
+                    <ProductGrid
+                        papers={publisherPapers}
+                        onProductClick={handlePaperClick}
                         onUpvote={handleUpvote}
                         userUpvotes={userUpvotes}
-                        onPublisherClick={() => {}} // No op
+                        onPublisherClick={() => {}}
                         onToggleSave={handleToggleSave}
                         savedPaperIds={savedPaperIds}
-                        activeCategory={'Front Page'} // Hide filters in publisher view usually
+                        activeCategory={'Front Page'}
                         setActiveCategory={() => {}}
                         hideFilters={true}
                     />
@@ -303,8 +354,8 @@ const App: React.FC = () => {
         )}
 
         {viewState.type === 'paper' && (
-          <ProductDetail 
-            product={viewState.paper} 
+          <ProductDetail
+            product={viewState.paper}
             onBack={handleBackToHome}
             onToggleSave={handleToggleSave}
             isSaved={savedPaperIds.includes(viewState.paper.id)}
@@ -313,14 +364,53 @@ const App: React.FC = () => {
         )}
 
         {viewState.type === 'submit' && (
-          <Checkout 
+          <Checkout
             onBack={handleBackToHome}
             onSubmit={handlePaperSubmit}
           />
         )}
+
+        {viewState.type === 'about' && (
+          <About
+            onBack={handleBackToHome}
+            onNavigate={navigateToPage}
+          />
+        )}
+
+        {viewState.type === 'contact' && (
+          <Contact
+            onBack={handleBackToHome}
+            onNavigate={navigateToPage}
+          />
+        )}
+
+        {viewState.type === 'terms' && (
+          <Terms
+            onBack={handleBackToHome}
+            onNavigate={navigateToPage}
+          />
+        )}
+
+        {viewState.type === 'privacy' && (
+          <Privacy
+            onBack={handleBackToHome}
+            onNavigate={navigateToPage}
+          />
+        )}
+
+        {viewState.type === 'faq' && (
+          <FAQ
+            onBack={handleBackToHome}
+            onNavigate={navigateToPage}
+          />
+        )}
       </main>
 
-      <Footer onLinkClick={handleNavClick} />
+      <Footer
+        onLinkClick={handleNavClick}
+        onCategoryClick={handleCategoryClick}
+        papers={sortedPapers}
+      />
     </div>
   );
 };
